@@ -35,7 +35,7 @@
   <br><br>
   <button id="generateBtn">Generate Questions</button>
   <br><br>
-  <a id="downloadBtn" href="https://e018b23f-bbff-4cbe-9ca0-67e6bdac9bb1/download-db" download>
+  <a id="downloadBtn" href="https://questionbot-ka2a.onrender.com/download-db" download>
     <button>⬇️ Download Database CSV</button>
   </a>
   
@@ -43,7 +43,9 @@
   <pre id="console"></pre>
 
   <script>
-    const apiURL = "https://e018b23f-bbff-4cbe-9ca0-67e6bdac9bb1/generate";
+// Replace this with your actual Render backend URL:
+const apiURL = "https://questionbot-ka2a.onrender.com/generate";
+
 
     document.getElementById("questionCount").oninput = function() {
       document.getElementById("questionCountValue").innerText = this.value;

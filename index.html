@@ -38,46 +38,59 @@
   <a id="downloadBtn" href="https://questionbot-ka2a.onrender.com/download-db" download>
     <button>⬇️ Download Database CSV</button>
   </a>
-  
+
   <h3>Console:</h3>
   <pre id="console"></pre>
 
   <script>
-// Replace this with your actual Render backend URL:
 const apiURL = "https://questionbot-ka2a.onrender.com/generate";
 
+document.getElementById("questionCount").oninput = function() {
+  document.getElementById("questionCountValue").innerText = this.value;
+};
 
-    document.getElementById("questionCount").oninput = function() {
-      document.getElementById("questionCountValue").innerText = this.value;
-    };
+document.getElementById("generateBtn").onclick = async function() {
+  const totalQuestions = document.getElementById("questionCount").value;
+  const questionType = document.querySelector('input[name="questionType"]:checked').value;
+  const topic = document.getElementById("topic").value;
+  const difficulty = document.getElementById("difficulty").value;
 
-    document.getElementById("generateBtn").onclick = async function() {
-      const totalQuestions = document.getElementById("questionCount").value;
-      const questionType = document.querySelector('input[name="questionType"]:checked').value;
-      const topic = document.getElementById("topic").value;
-      const difficulty = document.getElementById("difficulty").value;
+  const payload = {
+    totalQuestions: parseInt(totalQuestions),
+    questionType,
+    topic,
+    difficulty
+  };
 
-      const payload = {
-        totalQuestions: parseInt(totalQuestions),
-        questionType,
-        topic,
-        difficulty
-      };
+  const consoleEl = document.getElementById("console");
+  consoleEl.innerText = "🚀 Starting question generation...\n";
+  consoleEl.innerText += `🔄 Preparing payload...\n`;
+  consoleEl.innerText += JSON.stringify(payload, null, 2) + "\n\n";
+  consoleEl.innerText += "🔗 Sending request to backend...\n";
 
-      document.getElementById("console").innerText = "🚀 Sending request...";
+  try {
+    const response = await fetch(apiURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
 
-      try {
-        const response = await fetch(apiURL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-        const result = await response.json();
-        document.getElementById("console").innerText = JSON.stringify(result, null, 2);
-      } catch (error) {
-        document.getElementById("console").innerText = "❌ Error: " + error;
-      }
-    };
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+    }
+
+    const result = await response.json();
+
+    if (result.status === "error") {
+      consoleEl.innerText += `❌ Backend error: ${result.message}\n`;
+    } else {
+      consoleEl.innerText += "🎉 Generation complete:\n";
+      consoleEl.innerText += JSON.stringify(result, null, 2);
+    }
+  } catch (error) {
+    consoleEl.innerText += `❌ Fetch error: ${error}\n`;
+  }
+};
   </script>
 </body>
 </html>

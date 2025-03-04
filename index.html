@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bohnanza Quiz Generator</title>
+</head>
+<body>
+  <h1>🌱 Bohnanza Quiz Generator</h1>
+
+  <label for="questionCount">Number of Questions (1-100):</label>
+  <input type="range" id="questionCount" min="1" max="100" value="10">
+  <span id="questionCountValue">10</span>
+
+  <h3>Question Type:</h3>
+  <label><input type="radio" name="questionType" value="Simple" checked> Simple</label>
+  <label><input type="radio" name="questionType" value="Guess"> Guess</label>
+  <label><input type="radio" name="questionType" value="Mixed"> Mixed</label>
+
+  <h3>Topic:</h3>
+  <select id="topic">
+    <option>Crypto</option>
+    <option>Trading</option>
+    <option>Economics</option>
+  </select>
+
+  <h3>Difficulty:</h3>
+  <select id="difficulty">
+    <option>Easy</option>
+    <option>Medium</option>
+    <option>Hard</option>
+    <option>Insane</option>
+  </select>
+
+  <br><br>
+  <button id="generateBtn">Generate Questions</button>
+  <br><br>
+  <a id="downloadBtn" href="https://e018b23f-bbff-4cbe-9ca0-67e6bdac9bb1/download-db" download>
+    <button>⬇️ Download Database CSV</button>
+  </a>
+  
+  <h3>Console:</h3>
+  <pre id="console"></pre>
+
+  <script>
+    const apiURL = "https://e018b23f-bbff-4cbe-9ca0-67e6bdac9bb1/generate";
+
+    document.getElementById("questionCount").oninput = function() {
+      document.getElementById("questionCountValue").innerText = this.value;
+    };
+
+    document.getElementById("generateBtn").onclick = async function() {
+      const totalQuestions = document.getElementById("questionCount").value;
+      const questionType = document.querySelector('input[name="questionType"]:checked').value;
+      const topic = document.getElementById("topic").value;
+      const difficulty = document.getElementById("difficulty").value;
+
+      const payload = {
+        totalQuestions: parseInt(totalQuestions),
+        questionType,
+        topic,
+        difficulty
+      };
+
+      document.getElementById("console").innerText = "🚀 Sending request...";
+
+      try {
+        const response = await fetch(apiURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        document.getElementById("console").innerText = JSON.stringify(result, null, 2);
+      } catch (error) {
+        document.getElementById("console").innerText = "❌ Error: " + error;
+      }
+    };
+  </script>
+</body>
+</html>

@@ -8,39 +8,50 @@
 <body>
   <h1>🌱 Bohnanza Quiz Generator</h1>
 
-  <label for="questionCount">Number of Questions (1-100):</label>
-  <input type="range" id="questionCount" min="1" max="100" value="10">
-  <span id="questionCountValue">10</span>
+  <div style="display: flex;">
+    <!-- Left side: Generator -->
+    <div style="flex: 1; padding-right: 20px;">
+      <label for="questionCount">Number of Questions (1-100):</label>
+      <input type="range" id="questionCount" min="1" max="100" value="10">
+      <span id="questionCountValue">10</span>
 
-  <h3>Question Type:</h3>
-  <label><input type="radio" name="questionType" value="Simple" checked> Simple</label>
-  <label><input type="radio" name="questionType" value="Guess"> Guess</label>
-  <label><input type="radio" name="questionType" value="Mixed"> Mixed</label>
+      <h3>Question Type:</h3>
+      <label><input type="radio" name="questionType" value="Simple" checked> Simple</label>
+      <label><input type="radio" name="questionType" value="Guess"> Guess</label>
+      <label><input type="radio" name="questionType" value="Mixed"> Mixed</label>
 
-  <h3>Topic:</h3>
-  <select id="topic">
-    <option>Crypto</option>
-    <option>Trading</option>
-    <option>Economics</option>
-  </select>
+      <h3>Topic:</h3>
+      <select id="topic">
+        <option>Crypto</option>
+        <option>Trading</option>
+        <option>Economics</option>
+      </select>
 
-  <h3>Difficulty:</h3>
-  <select id="difficulty">
-    <option>Easy</option>
-    <option>Medium</option>
-    <option>Hard</option>
-    <option>Insane</option>
-  </select>
+      <h3>Difficulty:</h3>
+      <select id="difficulty">
+        <option>Easy</option>
+        <option>Medium</option>
+        <option>Hard</option>
+        <option>Insane</option>
+      </select>
 
-  <br><br>
-  <button id="generateBtn">Generate Questions</button>
-  <br><br>
-  <a id="downloadBtn" href="https://questionbot-ka2a.onrender.com/download-db" download>
-    <button>⬇️ Download Database CSV</button>
-  </a>
+      <br><br>
+      <button id="generateBtn">Generate Questions</button>
+      <br><br>
+      <a id="downloadBtn" href="https://questionbot-ka2a.onrender.com/download-db" download>
+        <button>⬇️ Download Database CSV</button>
+      </a>
 
-  <h3>Console:</h3>
-  <pre id="console"></pre>
+      <h3>Console:</h3>
+      <pre id="console"></pre>
+    </div>
+
+    <!-- Right side: Database Viewer -->
+    <div style="flex: 1; max-height: 90vh; overflow-y: scroll; border-left: 1px solid #ccc; padding-left: 20px;">
+      <h3>📄 Current Database:</h3>
+      <pre id="databaseViewer">Loading database...</pre>
+    </div>
+  </div>
 
   <script>
 const apiURL = "https://questionbot-ka2a.onrender.com/generate";
@@ -87,10 +98,39 @@ document.getElementById("generateBtn").onclick = async function() {
       consoleEl.innerText += "🎉 Generation complete:\n";
       consoleEl.innerText += JSON.stringify(result, null, 2);
     }
+
+    // Refresh DB viewer after generation
+    loadDatabase();
   } catch (error) {
     consoleEl.innerText += `❌ Fetch error: ${error}\n`;
   }
 };
+
+async function loadDatabase() {
+  const databaseEl = document.getElementById("databaseViewer");
+  databaseEl.innerText = "🔄 Loading...";
+
+  try {
+    const response = await fetch("https://questionbot-ka2a.onrender.com/database");
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+    }
+    const data = await response.json();
+
+    if (data.status === "error") {
+      databaseEl.innerText = `❌ Error loading database: ${data.message}`;
+    } else {
+      databaseEl.innerText = data.map((entry, index) =>
+        `${index + 1}. [${entry.type}] ${entry.question}`
+      ).join("\n\n");
+    }
+  } catch (error) {
+    databaseEl.innerText = `❌ Fetch error: ${error}`;
+  }
+}
+
+// Load DB on page load
+loadDatabase();
   </script>
 </body>
 </html>

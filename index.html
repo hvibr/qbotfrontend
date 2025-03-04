@@ -54,7 +54,9 @@
   </div>
 
   <script>
-const apiURL = "https://questionbot-ka2a.onrender.com/generate";
+const backendBaseURL = "https://questionbot-ka2a.onrender.com";
+const apiURL = `${backendBaseURL}/generate`;
+const databaseURL = `${backendBaseURL}/database`;
 
 document.getElementById("questionCount").oninput = function() {
   document.getElementById("questionCountValue").innerText = this.value;
@@ -111,7 +113,7 @@ async function loadDatabase() {
   databaseEl.innerText = "🔄 Loading...";
 
   try {
-    const response = await fetch("https://questionbot-ka2a.onrender.com/database");
+    const response = await fetch(databaseURL);
     if (!response.ok) {
       throw new Error(`HTTP ${response.status} - ${response.statusText}`);
     }
